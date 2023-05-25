@@ -1,31 +1,70 @@
+MainController
+
+@Controller
+public class MainController {
+    public static Long idnew=0L;
+    public AdsCollection collection = new AdsCollection();
+    @RequestMapping(value = "/", method = RequestMethod.GET)
+    public String index(ModelMap model){
+        ArrayList<Ads> list = collection.getList();
+        model.addAttribute("ads", list);
+        return "index";
+    }
+    @RequestMapping(value = "/create", method = RequestMethod.GET)
+    public String create(ModelMap model){
+        model.addAttribute("ads", new Ads());
+        return "add";
+    }
+
+    @RequestMapping(path = "/create", method = RequestMethod.POST)
+    public String create(Ads ads) {
+        idnew++;
+        ads.id=idnew;
+        collection.createNewAds(ads);
+        return "redirect:/";
+    }
+
+    @RequestMapping(path = "/delete/{id}")
+    public String delete(Model model, @PathVariable("id") Long id)
+    {
+        collection.deleteById(id);
+        return "redirect:/";
+    }
+    @RequestMapping(path = {"/edit/{id}"})
+    public String edit(ModelMap model, @PathVariable("id") Optional<Long> id) {
+        if (id.isPresent()) {
+            Ads entity = collection.findAdsId(id.get());
+            model.addAttribute("ads", entity);
+        }
+        return "edit";
+    }
+    @RequestMapping(path = "/edit", method = RequestMethod.POST)
+    public String editAds(Ads schedule) {
+        collection.editAdsId(schedule.id, schedule);
+        return "redirect:/";
+    }
+}
+
+add.html
 <!DOCTYPE html>
 <html lang="en"  xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Index</title>
+    <title>Title</title>
 </head>
 <body>
-<table>
-    <thead>
-        <tr>
-            <th>title</th>
-            <th>description</th>
-            <th>User</th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-        <tr th:each="ad : ${ads}">
-            <td th:text="${ad.getTitle()}"></td>
-            <td th:text="${ad.getDescription()}"></td>
-            <td th:text="${ad.getUser()}"></td>
-            <td>
-                <a th:href="@{/edit/{id}(id=${ad.id})}">Edit</a>
-                &nbsp;&nbsp;|
-                <a th:href="@{/delete/{id}(id=${ad.id})}">Delete</a>
-            </td>
-        </tr>
-    </tbody>
-</table>
+<form th:action="@{/create}" th:object="${ads}" method="post">
+    <label for="title">Заголовок</label>
+    <input type="text" id="title" placeholder="Заголовок"
+           th:field="*{title}">
+    <label for="description">Описание</label>
+    <input type="text" id="description" placeholder="Описание"
+           th:field="*{description}">
+    <label for="User">Пользователь</label>
+    <input type="text" id="User" placeholder="User"
+           th:field="*{User}">
+    <input type="submit"  value=" Submit">
+
+</form>
 </body>
 </html>
