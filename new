@@ -68,3 +68,24 @@ add.html
 </form>
 </body>
 </html>
+
+
+adscollection
+public class AdsCollection {
+    public Map<Long,Ads> BulletinBoardHash = new HashMap<>();
+    public void createNewAds(Ads ads){
+        BulletinBoardHash.put(ads.id, ads);
+    }
+    public ArrayList<Ads> getList(){
+        return new ArrayList<Ads>(BulletinBoardHash.values());
+    }
+    public void deleteById(Long id){
+        BulletinBoardHash.remove(id);
+    }
+    public Ads findAdsId(Long id){
+        return BulletinBoardHash.get(id);
+    }
+    public void editAdsId(Long id, Ads ads){
+        BulletinBoardHash.replace(id, ads);
+    }
+}
